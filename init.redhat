@@ -1,0 +1,81 @@
+#!/bin/bash
+#
+# cacti-log-parser          Start up the cacti-log-parser daemon
+#
+# chkconfig: 2345 99 1
+# description: Cacti log parser 
+#
+# processname: cacti-log-parser.py 
+### BEGIN INIT INFO
+# Provides:cacti-log-parser 
+# Required-Start: $local_fs $network $httpd 
+# Required-Stop: $local_fs 
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Start up the cacti-log-parser server daemon
+# Description: Cacti log parser 
+### END INIT INFO
+
+# Source function library
+. /etc/init.d/functions
+
+# Get network config
+. /etc/sysconfig/network
+
+RETVAL=0
+DAEMON=/opt/cacti_log_parser/bin/cacti-log-parser.py
+
+start() {
+    echo -n $"Starting cacti-log-parser: " 
+    # Start me up!
+    $DAEMON start 
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/cacti-log-parser
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping cacti-log-parser: " 
+    $DAEMON stop
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/cacti-log-parser
+    return $RETVAL
+}    
+
+restart() {
+      stop
+    start
+}    
+
+reload() {
+    stop
+    start
+}
+
+case "$1" in
+  start)
+      start
+    ;;
+  stop)
+      stop
+    ;;
+  status)
+    status cacti-log-parser
+    ;;
+  restart)
+      restart
+    ;;
+  condrestart)
+      [ -f /var/lock/subsys/cacti-log-parser ] && restart || :
+    ;;
+  reload)
+    reload
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop|status|restart|condrestart|reload}" 
+    exit 1
+esac
+
+exit $?

@@ -1,0 +1,12 @@
+/opt/cacti_log_parser/log/*.log {
+    compress
+    missingok
+    notifempty
+    rotate 5
+    size 100k
+    postrotate
+	/etc/init.d/cacti-log-parser stop
+	/etc/init.d/cacti-log-parser start
+    endscript
+
+}
